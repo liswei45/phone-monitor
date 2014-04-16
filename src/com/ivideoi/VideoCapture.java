@@ -36,13 +36,13 @@ public class VideoCapture implements Camera.PictureCallback
 			{
 				while (true)
 				{
-					MainActivity.sleep(8000);
+					Utils.sleep(8000);
 					_lock.lock();
 			        _mycamera = Camera.open();
 			        Camera.Parameters parameters = _mycamera.getParameters();
 			        parameters.setPictureFormat(android.graphics.ImageFormat.JPEG);
 			        _mycamera.startPreview();
-			        MainActivity.sleep(1000);
+			        Utils.sleep(1000);
 					_mycamera.takePicture(null, null, VideoCapture.this);
 					_lock.unlock();
 				}
@@ -57,8 +57,8 @@ public class VideoCapture implements Camera.PictureCallback
     {
     	_lock.lock();
     	_mycamera.release();
-    	DataIO.getInstance().uploadbyte(MainActivity.getTimeString()+".jpg", data);
-		MainActivity.updateView(1,_count++);
+    	DataIO.getInstance().uploadbyte(Utils.getTimeString()+".jpg", data);
+		//MainActivity.updateView(1,_count++);
 		_lock.unlock();
     }
 	

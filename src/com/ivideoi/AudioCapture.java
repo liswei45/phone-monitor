@@ -1,79 +1,77 @@
 package com.ivideoi;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import android.R.string;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
+
 public class AudioCapture
 {
-
-	public static AudioCapture Instance()
-	{
-		if(_this == null)
-		{
-			_this = new AudioCapture();
-		}
-		return _this;
-	}
+	public static int CAPTURERATE = 8000;
 	
-	public AudioCapture()
+	public static AudioCapture _this = new AudioCapture();
+	
+	private AudioCapture()
 	{
-		_lock = new ReentrantLock(true);
-        _audioBufferPos = 0;
-		_mymic = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, 20*1024);
-		_mymic.startRecording();
-
-		//capture thread
-		Thread audioth1 = new Thread(new Runnable()
-		{
-			public void run()
-			{
-				while (true)
-				{
-					MainActivity.sleep(200);
-					_lock.lock();
-					_audioBufferPos += _mymic.read(_auioBuffer, _audioBufferPos,_auioBuffer.length - _audioBufferPos);
-					_lock.unlock();
-				}
-				//_mymic.stop();
-			}
-		});
-		audioth1.start();
+		_running = false;
+		_mymic = new AudioRecord(MediaRecorder.AudioSource.MIC, CAPTURERATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, CAPTURERATE*5*2);		
+		_audioDatas = new ArrayList<AudioData>();
 		
-		//record thread
-		Thread audioth2 = new Thread(new Runnable()
+		Thread work = new Thread(new Runnable()
 		{
 			public void run()
 			{
 				while (true)
 				{
-					MainActivity.sleep(30000);
-				
-					_lock.lock();
-					byte [] datasend = Arrays.copyOfRange(_auioBuffer, 0, _audioBufferPos);
-					_audioBufferPos = 0;
-					_lock.unlock();
-					
-					byte [] wav = MainActivity.GetWAV(datasend);
-			    	DataIO.getInstance().uploadbyte(MainActivity.getTimeString()+".wav", wav);
-					MainActivity.updateView(2,_count++);
+					if(_running)
+					{
+						AudioData ad = new AudioData();
+						_mymic.read(ad._data, 0,ad._data.length);
+						ad._time = new Date();
+						for(int i=0;i<ad._data.length;i++)
+						{
+							ad._intensity += Math.abs(ad._data[i]);							
+						}
+						ad._intensity /= ad._data.length;
+						synchronized(_audioDatas)
+						{
+							_audioDatas.add(ad);
+						}
+					}
+					else
+					{
+						Utils.sleep(500);
+					}
 				}
 			}
 		});
-		audioth2.start();
+		work.start();
 	}
 	
-
-	byte[] _auioBuffer = new byte[960 * 1024 * 2];
-	private Integer _audioBufferPos;
+	public class AudioData
+	{
+		public short [] _data;
+		public Date _time;
+		public long _intensity;
+		
+		public AudioData()
+		{
+			_data = new short[CAPTURERATE];
+			_intensity = 0;
+		}
+	}
+	
+	public void start()
+	{
+		_mymic.startRecording();
+		_running = true;
+	}
+	
 	private AudioRecord _mymic;
-    private static AudioCapture _this;
-    private int _count = 0;
-    Lock _lock;
+	public boolean _running;
+	public List<AudioData> _audioDatas;
 }
