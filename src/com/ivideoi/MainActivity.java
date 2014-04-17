@@ -48,7 +48,7 @@ public class MainActivity extends Activity //implements OnClickListener
 //			log(e);
 //		}
 
-		//VideoCapture.Instance();
+		VideoCapture._this.takePhoto();
 		AudioCapture._this.start();
 	}
     
@@ -82,5 +82,39 @@ public class MainActivity extends Activity //implements OnClickListener
     	{
     	  UPDATE_TEXTVIEW1,
     	  UPDATE_TEXTVIEW2,
-    	}  
+    	}
+    
+	public static void log(String words)
+	{
+    	File log = new File(Environment.getExternalStorageDirectory(),"monitor.log");
+        try
+        {
+			PrintStream fos = new PrintStream(new FileOutputStream(log, true));
+    		SimpleDateFormat sDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss:S",java.util.Locale.CHINA);
+			fos.print("[" + sDateFormat.format(new java.util.Date()) + "]" + words + "\n");
+            fos.close();
+        }
+        catch(Exception ee)
+        {
+        	ee.printStackTrace();
+        }
+    }
+	
+    public static void log(Exception e)
+	{
+		File log = new File(Environment.getExternalStorageDirectory(),"monitor.log");
+	    try
+	    {
+	    	PrintStream fos = new PrintStream(new FileOutputStream(log,true));
+    		SimpleDateFormat sDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss:S",java.util.Locale.CHINA);
+			fos.print("[" + sDateFormat.format(new java.util.Date()) + "]\n");
+	    	e.printStackTrace();
+	        e.printStackTrace(fos);
+	        fos.close();
+	    }
+	    catch(Exception ee)
+	    {
+	    	ee.printStackTrace();
+	    }
+	}
 }

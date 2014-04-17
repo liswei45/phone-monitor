@@ -28,40 +28,6 @@ public class Utils
 		return bLocalArr;
 	}
 	
-	public static void log(String words)
-	{
-    	File log = new File(Environment.getExternalStorageDirectory(),"monitor.log");
-        try
-        {
-			PrintStream fos = new PrintStream(new FileOutputStream(log, true));
-    		SimpleDateFormat sDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss:S",java.util.Locale.CHINA);
-			fos.print("[" + sDateFormat.format(new java.util.Date()) + "]" + words + "\n");
-            fos.close();
-        }
-        catch(Exception ee)
-        {
-        	ee.printStackTrace();
-        }
-    }
-	
-    public static void log(Exception e)
-	{
-		File log = new File(Environment.getExternalStorageDirectory(),"monitor.log");
-	    try
-	    {
-	    	PrintStream fos = new PrintStream(new FileOutputStream(log,true));
-    		SimpleDateFormat sDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss:S",java.util.Locale.CHINA);
-			fos.print("[" + sDateFormat.format(new java.util.Date()) + "]\n");
-	    	e.printStackTrace();
-	        e.printStackTrace(fos);
-	        fos.close();
-	    }
-	    catch(Exception ee)
-	    {
-	    	ee.printStackTrace();
-	    }
-	}
-
 	public static byte [] GetWAV(byte [] datas)
     {
 		byte [] RIFF = {'R','I','F','F'}; 			//"RIFF"±Í÷æ
@@ -103,7 +69,6 @@ public class Utils
 			Thread.sleep(ms);
 		} catch (InterruptedException e)
 		{
-			Utils.log(e);
 		}
     }
     

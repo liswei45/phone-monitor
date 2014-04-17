@@ -51,7 +51,7 @@ public class DataIO
 	        }
 	        catch(Exception e)
 	        {
-				Utils.log(e);
+	        	MainActivity.log(e);
 				return false;
 	        }
 		}
@@ -78,7 +78,7 @@ public class DataIO
 			}
 			catch (Exception e)
 			{
-				Utils.log(e);
+				MainActivity.log(e);
 				return false;
 			}
 		}
@@ -107,7 +107,7 @@ public class DataIO
 			}
 			catch (Exception e)
 			{
-				Utils.log(e);
+				MainActivity.log(e);
 				return false;
 			}
 		}
